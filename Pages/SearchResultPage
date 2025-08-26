@@ -1,0 +1,51 @@
+// using System;
+// using System.Linq;
+// using NUnit.Framework;
+// using OpenQA.Selenium;
+// using OpenQA.Selenium.Chrome;
+// using OpenQA.Selenium.Support.UI;
+// using SeleniumExtras.WaitHelpers;
+// public class SearchResultsPage
+
+//     {
+
+//         private readonly IWebDriver _driver;
+
+//         private readonly WebDriverWait _wait;
+ 
+//         public SearchResultsPage(IWebDriver driver, WebDriverWait wait)
+
+//         {
+
+//             _driver = driver;
+
+//             _wait = wait;
+
+//         }
+ 
+//         private By ResultItems => By.CssSelector(".search-results__item");
+ 
+//         public IWebElement FirstResult()
+
+//         {
+
+//             var results = _wait.Until(d =>
+
+//             {
+
+//                 var items = d.FindElements(ResultItems);
+
+//                 return items.Count > 0 ? items : null;
+
+//             });
+
+//             return results.First();
+
+//         }
+ 
+//         public void ClickFirstResult() => FirstResult().Click();
+ 
+//         public int GetResultsCount() => _driver.FindElements(ResultItems).Count;
+
+//     }
+ 
