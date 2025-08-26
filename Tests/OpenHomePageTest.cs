@@ -1,96 +1,110 @@
-// [TestFixture]
 
-//     public class OpenHomePageTest
+using NUnit.Framework;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
+using TheConnectedShop.Pages;
 
-//     {
 
-//         private IWebDriver _driver = null!;
 
-//         private WebDriverWait _wait = null!;
 
-//         private HomePage _homePage = null!;
+namespace TheConnectedShop.Tests
+{
+    [TestFixture]
 
-//         private SearchResultsPage _searchResults = null!;
+    public class OpenHomePageTest
 
-//         // private ProductPage _productPage = null!;
 
-//         // private CartDrawer _cartDrawer = null!;
- 
-//         [SetUp]
+    {
 
-//         public void Setup()
+        private IWebDriver _driver = null!;
 
-//         {
+        private WebDriverWait _wait = null!;
 
-//             var options = new ChromeOptions();
+        private HomePage _homePage = null!;
 
-//             options.AddArgument("--start-maximized");
+         private SearchResultPage _searchResult = null!;
 
-//             _driver = new ChromeDriver(options);
- 
-//             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
+        // private ProductPage _productPage = null!;
 
-//             _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(15));
- 
-//             _homePage = new HomePage(_driver, _wait);
+        // private CartDrawer _cartDrawer = null!;
 
-//             _searchResults = new SearchResultsPage(_driver, _wait);
+        [SetUp]
 
-//             // _productPage = new ProductPage(_driver, _wait);
+        public void Setup()
 
-//             // _cartDrawer = new CartDrawer(_driver, _wait);
+        {
 
-//         }
- 
-//         [Test]
+            var options = new ChromeOptions();
 
-//         public void OpenHomePage_ShouldLoadSuccessfully()
+            options.AddArgument("--start-maximized");
 
-//         {
+            _driver = new ChromeDriver(options);
 
-//             _homePage.GoToUrl("https://theconnectedshop.com/");
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
 
-//             _homePage.WaitForPageLoad();
- 
-//             Assert.That(_driver.Title, Does.Contain("The Connected Shop"));
+            _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(15));
 
-//             Assert.That(_homePage.GetLogo().Displayed, Is.True);
+            _homePage = new HomePage(_driver, _wait);
 
-//         }
- 
-//         [Test]
+            _searchResult = new SearchResultPage(_driver, _wait);
 
-//         public void CheckLogoNavigatesToHomePage()
+            // _productPage = new ProductPage(_driver, _wait);
 
-//         {
+            // _cartDrawer = new CartDrawer(_driver, _wait);
 
-//             _homePage.GoToUrl("https://theconnectedshop.com/search?q=Smart+Door+Lock");
+        }
 
-//             _homePage.GetLogo().Click();
- 
-//             _wait.Until(d => d.Url.StartsWith("https://theconnectedshop.com/"));
+        [Test]
 
-//             Assert.That(_driver.Url, Does.StartWith("https://theconnectedshop.com/"));
+        public void OpenHomePage_ShouldLoadSuccessfully()
 
-//         }
- 
-//         [Test]
+        {
 
-//         public void CheckSearchResult()
+            _homePage.GoToUrl("https://theconnectedshop.com/");
 
-//         {
+            _homePage.WaitForPageLoad();
 
-//             _homePage.GoToUrl("https://theconnectedshop.com/");
+            Assert.That(_driver.Title, Does.Contain("The Connected Shop"));
 
-//             _homePage.WaitForPageLoad();
- 
-//             _homePage.SearchProduct("Smart Door Lock");
- 
-//             var firstResult = _searchResults.FirstResult();
+            Assert.That(_homePage.GetLogo().Displayed, Is.True);
 
-//             Assert.That(firstResult.Text, Does.Contain("Smart Door Lock"));
+        }
 
-//             Console.WriteLine($"First result text: {firstResult.Text}");
+        [Test]
 
-//         }
-//     }
+        public void CheckLogoNavigatesToHomePage()
+
+        {
+
+            _homePage.GoToUrl("https://theconnectedshop.com/search?q=Smart+Door+Lock");
+
+            _homePage.GetLogo().Click();
+
+            _wait.Until(d => d.Url.StartsWith("https://theconnectedshop.com/"));
+
+            Assert.That(_driver.Url, Does.StartWith("https://theconnectedshop.com/"));
+
+        }
+
+        [Test]
+
+        public void CheckSearchResult()
+
+        {
+
+            _homePage.GoToUrl("https://theconnectedshop.com/");
+
+            _homePage.WaitForPageLoad();
+
+            _homePage.SearchProduct("Smart Door Lock");
+
+            var firstResult = _searchResults.FirstResult();
+
+            Assert.That(firstResult.Text, Does.Contain("Smart Door Lock"));
+
+            Console.WriteLine($"First result text: {firstResult.Text}");
+
+        }
+    }
+}
