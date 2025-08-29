@@ -1,110 +1,78 @@
+using System;                     // basic C# utilities (like Console, TimeSpan)
+using NUnit.Framework;            // NUnit framework for writing and running tests
+using OpenQA.Selenium;            // Selenium main library (WebDriver interface)
+using OpenQA.Selenium.Chrome;     // Selenium Chrome driver support
+using OpenQA.Selenium.Support.UI; // Support for WebDriverWait and SelectElement
+using SeleniumExtras.WaitHelpers; // Extra conditions for WebDriverWait
+using TheConnectedShop.Pages;     // Your Page Object classes (HomePage, SearchResultPage)
 
-using NUnit.Framework;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
-using TheConnectedShop.Pages;
-
-
-
-
-namespace TheConnectedShop.Tests
+namespace TheConnectedShop.Tests   // Namespace for all your test classes
 {
-    [TestFixture]
-
-    public class OpenHomePageTest
-
-
+    [TestFixture]                  // Marks this class as a test fixture (test container)
+    public class OpenHomePageTests // Your test class
     {
+        private IWebDriver _driver = null!;           // WebDriver (the browser controller)
+        private WebDriverWait _wait = null!;          // Explicit wait object
+        private HomePage _homePage = null!;           // Page Object for HomePage
+        private SearchResultPage _searchResultPage = null!; // Page Object for SearchResultPage
 
-        private IWebDriver _driver = null!;
-
-        private WebDriverWait _wait = null!;
-
-        private HomePage _homePage = null!;
-
-         private SearchResultPage _searchResult = null!;
-
-        // private ProductPage _productPage = null!;
-
-        // private CartDrawer _cartDrawer = null!;
-
-        [SetUp]
-
+        [SetUp] // Runs before each test
         public void Setup()
-
         {
+            var options = new ChromeOptions();        // Chrome browser settings
+            options.AddArgument("--start-maximized"); // Start browser maximized
 
-            var options = new ChromeOptions();
+            _driver = new ChromeDriver(options);      // Launch Chrome with the options
 
-            options.AddArgument("--start-maximized");
+            // Don't mix implicit and explicit waits → better to use explicit only
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.Zero;
 
-            _driver = new ChromeDriver(options);
-
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
-
-            _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(15));
-
-            _homePage = new HomePage(_driver, _wait);
-
-            _searchResult = new SearchResultPage(_driver, _wait);
-
-            // _productPage = new ProductPage(_driver, _wait);
-
-            // _cartDrawer = new CartDrawer(_driver, _wait);
-
+            _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(15)); // Create WebDriverWait (15 sec)
+            
+            // Initialize Page Objects with driver + wait
+            _homePage = new HomePage(_driver, _wait);            
+            _searchResultPage = new SearchResultPage(_driver, _wait); 
         }
 
-        [Test]
+        [TearDown] // Runs after each test
+        public void TearDown()
+        {
+            try { _driver?.Quit(); }   // Close the browser after test
+            catch { /* ignore */ }     // Ignore errors if already closed
+        }
 
+        [Test] // First test: check if homepage loads correctly
         public void OpenHomePage_ShouldLoadSuccessfully()
-
         {
+            _homePage.GoToUrl("https://theconnectedshop.com/"); // Navigate to homepage
+            _homePage.WaitForPageLoad();                        // Wait until logo is visible
 
-            _homePage.GoToUrl("https://theconnectedshop.com/");
-
-            _homePage.WaitForPageLoad();
-
-            Assert.That(_driver.Title, Does.Contain("The Connected Shop"));
-
-            Assert.That(_homePage.GetLogo().Displayed, Is.True);
-
+            Assert.That(_driver.Title, Does.Contain("The Connected Shop")); // Check page title
+            Assert.That(_homePage.GetLogo().Displayed, Is.True);            // Check that logo is displayed
         }
 
-        [Test]
-
+        [Test] // Second test: check if clicking logo goes back to homepage
         public void CheckLogoNavigatesToHomePage()
-
         {
+            _homePage.GoToUrl("https://theconnectedshop.com/search?q=Smart+Door+Lock"); // Go directly to search page
+            _homePage.GetLogo().Click();                                               // Click on logo
 
-            _homePage.GoToUrl("https://theconnectedshop.com/search?q=Smart+Door+Lock");
-
-            _homePage.GetLogo().Click();
-
-            _wait.Until(d => d.Url.StartsWith("https://theconnectedshop.com/"));
-
-            Assert.That(_driver.Url, Does.StartWith("https://theconnectedshop.com/"));
-
+            _wait.Until(d => d.Url.StartsWith("https://theconnectedshop.com/"));       // Wait until URL starts with homepage
+            Assert.That(_driver.Url, Does.StartWith("https://theconnectedshop.com/")); // Verify URL
         }
 
-        [Test]
-
+        [Test] // Third test: check search functionality
         public void CheckSearchResult()
-
         {
+            _homePage.GoToUrl("https://theconnectedshop.com/"); // Navigate to homepage
+            _homePage.WaitForPageLoad();                        // Wait until page loads
 
-            _homePage.GoToUrl("https://theconnectedshop.com/");
+            _homePage.SearchProduct("Smart Door Lock");         // Perform a search for "Smart Door Lock"
 
-            _homePage.WaitForPageLoad();
+            var firstResult = _searchResultPage.FirstResult();  // Get the first search result
+            Assert.That(firstResult.Text, Does.Contain("Smart").Or.Contain("Lock")); // Verify it contains expected text
 
-            _homePage.SearchProduct("Smart Door Lock");
-
-            var firstResult = _searchResults.FirstResult();
-
-            Assert.That(firstResult.Text, Does.Contain("Smart Door Lock"));
-
-            Console.WriteLine($"First result text: {firstResult.Text}");
-
+            Console.WriteLine($"First result text: {firstResult.Text}"); // Print result text for debugging
         }
     }
 }
