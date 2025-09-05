@@ -19,6 +19,7 @@ namespace TheConnectedShop.Pages   // Namespace for Page Objects
  
         // CSS locator for all result items on the search page
         private By ResultItems => By.CssSelector(".search-results__item");
+        private By SearchBar => By.Id("Search-In-Inline");
  
         /// <summary>
         /// Returns the first search result element (IWebElement).
@@ -44,5 +45,12 @@ namespace TheConnectedShop.Pages   // Namespace for Page Objects
         /// Returns the total number of search results found.
         /// </summary>
         public int GetResultCount() => _driver.FindElements(ResultItems).Count;
+
+     public void SearchProduct(string query)
+{
+    var search = _wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementIsVisible(SearchBar));
+    search.Clear();
+    search.SendKeys(query + Keys.Enter);
+}
     }
 }

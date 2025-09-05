@@ -5,6 +5,7 @@ using OpenQA.Selenium.Chrome;     // Selenium Chrome driver support
 using OpenQA.Selenium.Support.UI; // Support for WebDriverWait and SelectElement
 using SeleniumExtras.WaitHelpers; // Extra conditions for WebDriverWait
 using TheConnectedShop.Pages;     // Your Page Object classes (HomePage, SearchResultPage)
+using TheConnectedShop.Configs;   // Configuration classes (like SearchConfig)
 
 namespace TheConnectedShop.Tests   // Namespace for all your test classes
 {
@@ -66,8 +67,10 @@ namespace TheConnectedShop.Tests   // Namespace for all your test classes
         {
             _homePage.GoToUrl("https://theconnectedshop.com/"); // Navigate to homepage
             _homePage.WaitForPageLoad();                        // Wait until page loads
+            var searchConfig = SearchConfig.LoadFromFile("C:\Users\velic\Downloads\Projectscsharp\theconnectedshop\bin\Debug\net8.0/searchData.json");
+            var query = searchConfig.SearchQueries[0];
 
-            _homePage.SearchProduct("Smart Door Lock");         // Perform a search for "Smart Door Lock"
+            _searchResultPage.SearchProduct(query);         // Perform a search for "Smart Door Lock"
 
             var firstResult = _searchResultPage.FirstResult();  // Get the first search result
             Assert.That(firstResult.Text, Does.Contain("Smart").Or.Contain("Lock")); // Verify it contains expected text

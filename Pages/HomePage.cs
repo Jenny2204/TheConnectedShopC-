@@ -31,12 +31,7 @@ namespace TheConnectedShop
  
         public void ClickLogo() => _wait.Until(ExpectedConditions.ElementToBeClickable(Logo)).Click();
  
-        public void SearchProduct(string query)
-        {
-            var search = _wait.Until(ExpectedConditions.ElementIsVisible(SearchBar));
-            search.Clear();
-            search.SendKeys(query + Keys.Enter);
-        }
+    
  
         public IWebElement GetLogo() => _wait.Until(ExpectedConditions.ElementIsVisible(Logo));
     }
