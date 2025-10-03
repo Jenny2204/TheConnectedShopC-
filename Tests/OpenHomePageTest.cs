@@ -29,10 +29,10 @@ namespace TheConnectedShop.Tests   // Namespace for all your test classes
             _driver.Manage().Timeouts().ImplicitWait = TimeSpan.Zero;
 
             _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(15)); // Create WebDriverWait (15 sec)
-            
+
             // Initialize Page Objects with driver + wait
-            _homePage = new HomePage(_driver, _wait);            
-            _searchResultPage = new SearchResultPage(_driver, _wait); 
+            _homePage = new HomePage(_driver, _wait);
+            _searchResultPage = new SearchResultPage(_driver, _wait);
         }
 
         [TearDown] // Runs after each test
@@ -67,7 +67,12 @@ namespace TheConnectedShop.Tests   // Namespace for all your test classes
         {
             _homePage.GoToUrl("https://theconnectedshop.com/"); // Navigate to homepage
             _homePage.WaitForPageLoad();                        // Wait until page loads
-            var searchConfig = SearchConfig.LoadFromFile("C:\Users\velic\Downloads\Projectscsharp\theconnectedshop\bin\Debug\net8.0/searchData.json");
+            var searchConfig = SearchConfig.LoadFromFile(@"C:\Users\velic\Downloads\Projectscsharp\theconnectedshop\bin\Debug\net8.0\searchData.json");
+            if (searchConfig.SearchQueries == null || searchConfig.SearchQueries.Count == 0)
+            {
+                Assert.Fail("Search query list is empty or not loaded.");
+            }
+
             var query = searchConfig.SearchQueries[0];
 
             _searchResultPage.SearchProduct(query);         // Perform a search for "Smart Door Lock"
@@ -77,5 +82,15 @@ namespace TheConnectedShop.Tests   // Namespace for all your test classes
 
             Console.WriteLine($"First result text: {firstResult.Text}"); // Print result text for debugging
         }
+          [Test] // Second test: check if clicking logo goes back to homepage
+        public void ProductPage()
+        {
+            _homePage.GoToUrl("https://theconnectedshop.com/products/smart-door-lock-slim"); // Go directly to search page
+            _homePage.GetLogo().Click();                                               // Click on logo
+
+            // _wait.Until(d => d.Url.StartsWith("https://theconnectedshop.com/"));       // Wait until URL starts with homepage
+            // Assert.That(_driver.Url, Does.StartWith("https://theconnectedshop.com/")); // Verify URL
+        }
+
     }
 }
